@@ -1,0 +1,7 @@
+# The source packet contains personal and financial information.
+AREAL_LOAN.pdf
+
+# Local Python environment and interpreter cache.
+.venv/
+__pycache__/
+*.py[cod]
