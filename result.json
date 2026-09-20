@@ -1,0 +1,194 @@
+{
+  "source_file": "AREAL_LOAN.pdf",
+  "page_count": 12,
+  "confidence_policy": {
+    "scale": "0.0-1.0 heuristic evidence-strength score",
+    "calibrated": false,
+    "notes": "Scores reflect visible document cues and cross-document agreement. They are not calibrated probabilities and should not replace review flags."
+  },
+  "page_labels": [
+    {
+      "page_number": 1,
+      "label": "Property - Tax Record Information Sheet",
+      "confidence": 0.99,
+      "notes": "The page is headed TAX RECORD INFORMATION SHEET and contains the completed first page of the form."
+    },
+    {
+      "page_number": 2,
+      "label": "Property - Tax Record Information Sheet",
+      "confidence": 0.99,
+      "notes": "Continuation page marked Page 2 of 2; mostly blank tax-authority rows. Its printed loan number is [REDACTED_LOAN_ID_2], conflicting with page 1 and other loan documents."
+    },
+    {
+      "page_number": 3,
+      "label": "Title - Signature / Name Affidavit (Ack)",
+      "confidence": 0.99,
+      "notes": "The page is headed SIGNATURE/NAME AFFIDAVIT. It includes handwritten or variant name forms, so the canonical borrower name is taken from repeated borrower fields in other documents."
+    },
+    {
+      "page_number": 4,
+      "label": "Title - Rider",
+      "confidence": 0.99,
+      "notes": "Condominium Rider, printed page 1 of 3."
+    },
+    {
+      "page_number": 5,
+      "label": "Title - Rider",
+      "confidence": 0.99,
+      "notes": "Continuation of the Condominium Rider, printed page 2 of 3."
+    },
+    {
+      "page_number": 6,
+      "label": "Title - Rider",
+      "confidence": 0.99,
+      "notes": "Final page of the Condominium Rider, printed page 3 of 3."
+    },
+    {
+      "page_number": 7,
+      "label": "Lender - Rate Note",
+      "confidence": 0.99,
+      "notes": "Fixed-rate Note, printed page 1 of 4."
+    },
+    {
+      "page_number": 8,
+      "label": "Lender - Rate Note",
+      "confidence": 0.99,
+      "notes": "Continuation of the Fixed-rate Note, printed page 2 of 4."
+    },
+    {
+      "page_number": 9,
+      "label": "Lender - Rate Note",
+      "confidence": 0.99,
+      "notes": "Fixed-rate Note, printed page 4 of 4. The PDF places this page before the page printed 3 of 4."
+    },
+    {
+      "page_number": 10,
+      "label": "Lender - Rate Note",
+      "confidence": 0.99,
+      "notes": "Fixed-rate Note, printed page 3 of 4. Keep the PDF page reference and record the internal document order separately."
+    },
+    {
+      "page_number": 11,
+      "label": "Mortgage - Closing Disclosure - Seller",
+      "confidence": 0.99,
+      "notes": "Seller's Closing Disclosure, page 1 of 2."
+    },
+    {
+      "page_number": 12,
+      "label": "Mortgage - Closing Disclosure - Seller",
+      "confidence": 0.99,
+      "notes": "Closing Disclosure cost-details page marked 2a of 2."
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "DOC-01",
+      "label": "Property - Tax Record Information Sheet",
+      "pages": [1, 2],
+      "document_page_order": [1, 2],
+      "notes": "The two pages form one tax-record sheet. The loan-number mismatch is within this document, so the two page observations are not independent document-level confirmations."
+    },
+    {
+      "document_id": "DOC-02",
+      "label": "Title - Signature / Name Affidavit (Ack)",
+      "pages": [3],
+      "document_page_order": [3],
+      "notes": "Single-page affidavit with handwritten and alternate name forms."
+    },
+    {
+      "document_id": "DOC-03",
+      "label": "Title - Rider",
+      "pages": [4, 5, 6],
+      "document_page_order": [4, 5, 6],
+      "notes": "Condominium Rider, internally numbered pages 1 through 3."
+    },
+    {
+      "document_id": "DOC-04",
+      "label": "Lender - Rate Note",
+      "pages": [7, 8, 9, 10],
+      "document_page_order": [7, 8, 10, 9],
+      "notes": "One Fixed-rate Note. document_page_order follows the printed page numbers 1, 2, 3, 4 while pages remains in source-PDF order."
+    },
+    {
+      "document_id": "DOC-05",
+      "label": "Mortgage - Closing Disclosure - Seller",
+      "pages": [11, 12],
+      "document_page_order": [11, 12],
+      "notes": "Seller's Closing Disclosure pages present in the supplied PDF; page 12 is marked 2a of 2."
+    }
+  ],
+  "loan_level_fields": {
+    "borrower_name": {
+      "value": "[REDACTED_BORROWER]",
+      "source_pages": [1, 6, 10, 11],
+      "supporting_documents": ["DOC-01", "DOC-03", "DOC-04", "DOC-05"],
+      "confidence": 0.97,
+      "notes": "Canonical spelling repeated in borrower or signature fields. Page 3 contains name variants; those are not substituted for the repeated borrower name."
+    },
+    "property_address": {
+      "value": "[REDACTED_PROPERTY_ADDRESS]",
+      "source_pages": [3, 4, 7, 11],
+      "supporting_documents": ["DOC-02", "DOC-03", "DOC-04", "DOC-05"],
+      "confidence": 0.98,
+      "notes": "Line breaks and spacing are normalized; address components and spelling follow the source documents."
+    },
+    "loan_number": {
+      "value": "[REDACTED_LOAN_ID_1]",
+      "source_pages": [1, 3, 4, 7],
+      "supporting_documents": ["DOC-01", "DOC-02", "DOC-03", "DOC-04"],
+      "confidence": 0.94,
+      "review_required": true,
+      "notes": "Selected because [REDACTED_LOAN_ID_1] appears across four distinct document groups. Page 2 of DOC-01 instead prints [REDACTED_LOAN_ID_2]; see conflicts."
+    }
+  },
+  "conflicts": [
+    {
+      "conflict_id": "CONFLICT-01",
+      "field": "loan_number",
+      "type": "different_values_across_pages",
+      "observations": [
+        {
+          "value": "[REDACTED_LOAN_ID_1]",
+          "source_pages": [1, 3, 4, 7],
+          "supporting_documents": ["DOC-01", "DOC-02", "DOC-03", "DOC-04"]
+        },
+        {
+          "value": "[REDACTED_LOAN_ID_2]",
+          "source_pages": [2],
+          "supporting_documents": ["DOC-01"]
+        }
+      ],
+      "selected_value": "[REDACTED_LOAN_ID_1]",
+      "resolution_reason": "The selected value is supported by four distinct document groups; the competing value appears only on the continuation page of the tax-record sheet. Support is counted by distinct document group rather than repeated page mentions.",
+      "resolution_status": "selected_with_conflict",
+      "requires_human_review": true,
+      "recommended_action": "Confirm the loan number against the authoritative loan system or source file before relying on it downstream."
+    }
+  ],
+  "quality_flags": [
+    {
+      "flag_id": "FLAG-01",
+      "type": "loan_number_conflict",
+      "severity": "high",
+      "related_pages": [1, 2, 3, 4, 7],
+      "action": "human_review",
+      "conflict_id": "CONFLICT-01"
+    },
+    {
+      "flag_id": "FLAG-02",
+      "type": "internal_page_order_mismatch",
+      "severity": "medium",
+      "related_pages": [7, 8, 9, 10],
+      "action": "preserve_pdf_page_numbers_and_record_printed_page_order",
+      "document_id": "DOC-04"
+    },
+    {
+      "flag_id": "FLAG-03",
+      "type": "name_variants_in_affidavit",
+      "severity": "medium",
+      "related_pages": [3],
+      "action": "retain_variants_as_evidence_without_overwriting_canonical_borrower_name",
+      "document_id": "DOC-02"
+    }
+  ]
+}
