@@ -61,6 +61,8 @@ The local implementation is a deterministic baseline, not a live LLM call. This 
 
 The pipeline was run against the supplied PDF. The generated output contains 12 page labels, five document groups, and all three requested fields. The output structure and source-page references were checked; pages 1-3 were visually reviewed, including the loan-number mismatch on page 2. The note's printed page sequence and the Closing Disclosure's Property cell were also checked against their page text/layout. No dedicated automated test suite is included in this small assignment implementation.
 
-## AI workflow
+## First-pass errors I found and corrected
 
-The tools, review process, and one concrete first-pass extraction error are documented in `AI_WORKFLOW.md`. The required five-to-eight-minute English screen recording should show the actual repository, prompts, local run, output, and manual review.
+When I compared the first generated JSON with the labeled fields and the source PDF, I found two extraction errors. The borrower-name rule treated any text following the word “Borrower” as a possible name, so headings such as “Borrower Did Not Shop For” and “Closing Date” appeared as false name candidates. The address rule also read the spaced house number on page 1 as `4` instead of `[REDACTED_ADDRESS_NUMBER]`.
+
+I rejected those candidates because they did not match the explicit borrower-name field or the address printed on the source page. I narrowed name extraction to the explicit `Borrower(s) Name` field and exact supporting occurrences. For the address, I made separated-digit normalization conditional on a following compass direction and added a coordinate-based fallback that reads the Closing Disclosure’s Property cell. After rerunning the pipeline, I checked the corrected values against the PDF. I left the different loan number on page 2 in the output as a conflict requiring human review rather than hiding it.
