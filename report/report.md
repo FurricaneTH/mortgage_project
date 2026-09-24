@@ -41,7 +41,7 @@ The first candidate is supported by PDF pages 1, 3-10 across four distinct group
 
 The reported confidence is `0.88`. It is a heuristic evidence-strength score capped because a conflict exists; it is not a model probability and is not used to choose between values. There is no live LLM in this baseline, so no model-generated confidence signal is available. Selection instead rests on the visible source-page evidence and agreement across distinct documents. An authoritative loan system or source file must resolve the discrepancy.
 
-The Closing Disclosure's sale-price field and the Note's principal field describe different concepts and should not be treated as duplicate observations. Field-role checks also prevent a seller's mailing address or the document's MIN/file number from replacing the requested borrower, property, or loan-number fields.
+The extraction prompt defines `property_address` as the mortgaged property rather than a mailing address, and `loan_number` as an identifier rather than a MIN, file number, or amount. The local loan-number parser enforces an explicit loan-number label. Address extraction currently scans page text for address patterns and adds a coordinate-based fallback for the Closing Disclosure's `Property` cell; it does not yet classify the semantic role of every address occurrence across arbitrary documents. Broader deployment would require role-aware address filtering and validation against more document layouts.
 
 ## Field extraction design and trade-offs
 
