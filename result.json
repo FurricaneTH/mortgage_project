@@ -225,7 +225,7 @@
       ],
       "confidence": 0.98,
       "review_required": false,
-      "notes": "Selected from explicit borrower fields; matching appearances in other documents are supporting evidence. Name variants in the affidavit are retained as a quality flag."
+      "notes": "Selected from explicit borrower fields; matching appearances in other documents are supporting evidence. Name variants in the affidavit are retained as a quality flag. Sensitive values are redacted in this artifact; evidence references are preserved."
     },
     "property_address": {
       "value": "[REDACTED_PROPERTY_ADDRESS]",
@@ -245,7 +245,7 @@
       ],
       "confidence": 0.98,
       "review_required": false,
-      "notes": "Whitespace and line breaks are normalized; source spelling and address components are preserved."
+      "notes": "Whitespace and line breaks are normalized; source spelling and address components are preserved. Sensitive values are redacted in this artifact; evidence references are preserved."
     },
     "loan_number": {
       "value": "[REDACTED_LOAN_ID_1]",
@@ -268,7 +268,7 @@
       ],
       "confidence": 0.88,
       "review_required": true,
-      "notes": "Evidence is ranked by distinct document groups and document-type reliability, not by repeated page mentions. Competing values require human review."
+      "notes": "Evidence is ranked by distinct document groups and document-type reliability, not by repeated page mentions. Competing values require human review. Sensitive values are redacted in this artifact; evidence references are preserved."
     }
   },
   "conflicts": [
@@ -357,5 +357,11 @@
       "action": "retain_variants_as_evidence_without_overwriting_canonical_borrower_name",
       "document_id": "DOC-02"
     }
-  ]
+  ],
+  "privacy_notice": {
+    "sensitive_values_redacted": true,
+    "policy": "Borrower, property, and loan identifiers are replaced with stable placeholders before output is written.",
+    "preserved": "Page references, document groups, evidence counts, confidence scores, conflicts, and review flags.",
+    "limitation": "Redacted values cannot be compared directly with the source PDF from this artifact."
+  }
 }

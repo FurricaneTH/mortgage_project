@@ -22,7 +22,7 @@ python src/loan_pipeline.py --input path/to/package.pdf --labels path/to/labels.
 
 ## Validate the working component
 
-The pipeline checks its result before writing it: every PDF page must have exactly one allowed label, document groups must cover all pages without duplicates, extracted fields must match `extraction_fields.json`, and evidence page references must be in range. On the supplied 12-page package, a successful run reports 12 page labels, five document groups, three loan fields, and one high-severity review flag for the conflicting loan number. Compare the generated `result.json` with the source pages when reviewing values; the conflict is intentionally retained for human review. The implementation is local and does not require an LLM API key, so the full pipeline can run without external credentials.
+Before writing output, the pipeline redacts borrower, property, and loan identifiers using stable placeholders. It preserves page references, document groups, confidence scores, conflicts, and review flags. Consequently, committed `result.json` is a privacy-safe representation and its placeholder values cannot be compared directly with the source PDF. Review source values only in the authorized local environment; do not copy them into the repository, report, or recording. The implementation is local and does not require an LLM API key, so the full pipeline can run without external credentials.
 
 `AREAL_LOAN.pdf` is intentionally excluded from version control because it contains loan and borrower details. On a fresh checkout, place the authorized assignment-provided PDF in the project root before running the default command.
 
@@ -51,4 +51,4 @@ The pipeline checks its result before writing it: every PDF page must have exact
 
 This is a small, assignment-specific baseline, not a production mortgage-processing system. It expects selectable text in the PDF; pages without extractable text stop with an actionable error and need OCR before classification. The address patterns cover common U.S. formats and should be expanded before use on a broader corpus. Any loan-number conflict is routed for human review.
 
-The supplied loan package contains personal and financial details. Keep `AREAL_LOAN.pdf` local and do not publish it. The generated `result.json` and report also contain borrower, property, and loan values; treat them as sensitive and mask them in recordings or any sharing outside the authorized submission channel.
+The supplied loan package may contain personal and financial details. Keep `AREAL_LOAN.pdf` local and do not publish it. The pipeline redacts sensitive values before writing `result.json`; the report and recording outline use the same stable placeholders. If you change the redaction policy, review every output and recording frame before sharing.

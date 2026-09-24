@@ -575,6 +575,67 @@ def build_result(
     }
 
 
+def redact_sensitive_values(result: dict[str, Any]) -> dict[str, Any]:
+    """Replace borrower, property, and loan identifiers before any output is written.
+
+    Evidence locations, group IDs, scoring, and review decisions remain intact.
+    Loan candidates receive stable placeholders so the conflict stays legible.
+    """
+    fields = result["loan_level_fields"]
+    replacements: dict[str, str] = {}
+
+    borrower_name = fields.get("borrower_name", {}).get("value")
+    if isinstance(borrower_name, str) and borrower_name:
+        replacements[borrower_name] = "[REDACTED_BORROWER]"
+
+    property_address = fields.get("property_address", {}).get("value")
+    if isinstance(property_address, str) and property_address:
+        replacements[property_address] = "[REDACTED_PROPERTY_ADDRESS]"
+
+    loan_candidates = {
+        observation.get("value")
+        for conflict in result.get("conflicts", [])
+        if conflict.get("field") == "loan_number"
+        for observation in conflict.get("observations", [])
+        if isinstance(observation.get("value"), str) and observation["value"]
+    }
+    selected_loan = fields.get("loan_number", {}).get("value")
+    if isinstance(selected_loan, str) and selected_loan:
+        loan_candidates.add(selected_loan)
+    ordered_candidates = []
+    if isinstance(selected_loan, str) and selected_loan in loan_candidates:
+        ordered_candidates.append(selected_loan)
+    ordered_candidates.extend(sorted(loan_candidates - set(ordered_candidates)))
+    for index, candidate in enumerate(ordered_candidates, start=1):
+        replacements[candidate] = f"[REDACTED_LOAN_ID_{index}]"
+
+    def replace_strings(value: Any) -> Any:
+        if isinstance(value, dict):
+            return {key: replace_strings(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [replace_strings(item) for item in value]
+        if isinstance(value, str):
+            for raw_value in sorted(replacements, key=len, reverse=True):
+                value = value.replace(raw_value, replacements[raw_value])
+            return value
+        return value
+
+    sanitized = replace_strings(result)
+    for field_name in ("borrower_name", "property_address", "loan_number"):
+        if field_name in sanitized["loan_level_fields"]:
+            note = sanitized["loan_level_fields"][field_name]["notes"]
+            sanitized["loan_level_fields"][field_name]["notes"] = (
+                f"{note} Sensitive values are redacted in this artifact; evidence references are preserved."
+            )
+    sanitized["privacy_notice"] = {
+        "sensitive_values_redacted": True,
+        "policy": "Borrower, property, and loan identifiers are replaced with stable placeholders before output is written.",
+        "preserved": "Page references, document groups, evidence counts, confidence scores, conflicts, and review flags.",
+        "limitation": "Redacted values cannot be compared directly with the source PDF from this artifact.",
+    }
+    return sanitized
+
+
 def validate_result(result: dict[str, Any], labels: list[str], expected_fields: list[str]) -> None:
     """Fail closed on broken page coverage or source references before writing."""
     page_count = result["page_count"]
@@ -613,6 +674,7 @@ def run(pdf_path: Path, labels_path: Path, fields_path: Path) -> dict[str, Any]:
         page.update(classification)
     documents = group_documents(pages)
     result = build_result(pdf_path, pages, documents, fields)
+    result = redact_sensitive_values(result)
     validate_result(result, labels, fields)
     return result
 

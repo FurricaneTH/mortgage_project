@@ -21,6 +21,7 @@
 
 - I ran `python src/loan_pipeline.py` with the supplied PDF. The run produced 12 page labels, five document groups, three loan fields, and a high-severity review flag for the loan-number conflict.
 - The pipeline validates full page coverage, allowed labels, non-overlapping document groups, requested field keys, and in-range evidence pages before writing JSON. I compared the generated output with the source pages, including the page 2 number conflict, printed page order, and the Closing Disclosure Property cell.
+- The pipeline now replaces borrower, property, and loan identifiers with stable placeholders before writing JSON. Page evidence, agreement counts, conflict status, and review flags remain visible; exact identifier comparison is limited to the authorized local source review. The report and recording use the same privacy policy.
 - I rendered and visually reviewed the report PDF after edits. No separate automated unit-test suite was added; verification used the executable pipeline, built-in structural checks, source-page review, and PDF rendering.
 
 ## One Example Where the Agent Was Wrong or Incomplete

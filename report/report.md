@@ -9,6 +9,8 @@ The assignment asks for page classification, document grouping, three loan-level
 
 The design uses a hybrid approach: deterministic text and layout rules make the provided example reproducible; the full LLM prompts are maintained in `prompts/page_classification.md` and `prompts/field_extraction.md` for an API-backed extension. The output preserves evidence pages, printed pagination, competing observations, and review flags.
 
+**Privacy handling:** borrower, property, and loan identifiers are redacted by the pipeline before `result.json` is written. Stable placeholders preserve which observations agree or conflict, while page references and review evidence remain intact. The committed report and JSON therefore do not expose the source values; those placeholders cannot be compared directly with the source PDF.
+
 JSON was selected because it keeps page labels, document groups, extracted fields, evidence, conflicts, and review flags in one machine-readable structure that is easy to validate and reuse.
 
 ## Page classification and document grouping
@@ -27,15 +29,15 @@ The system keeps 1-based PDF page numbers as source references. It stores printe
 
 | Field | Selected value | Source pages |
 |---|---|---|
-| `borrower_name` | [REDACTED_BORROWER] | 1, 3, 6, 10, 11 |
-| `property_address` | [REDACTED_PROPERTY_ADDRESS] | 1, 3, 4, 7, 11 |
-| `loan_number` | [REDACTED_LOAN_ID_1] | 1, 3-10 |
+| `borrower_name` | `[REDACTED_BORROWER]` | 1, 3, 6, 10, 11 |
+| `property_address` | `[REDACTED_PROPERTY_ADDRESS]` | 1, 3, 4, 7, 11 |
+| `loan_number` | `[REDACTED_LOAN_ID_1]` | 1, 3-10 |
 
 The address is normalized for whitespace and line breaks while preserving the street, unit, city, state, and ZIP code. The affidavit contains alternate name forms; the repeated borrower name in explicit borrower/signature contexts remains canonical.
 
 ## Loan-level reconciliation
 
-The tax-record sheet contains conflicting loan numbers: `[REDACTED_LOAN_ID_1]` on PDF page 1 and `[REDACTED_LOAN_ID_2]` on page 2. I checked page 2 against the rendered source; the differing digits are present in the document, so I did not silently correct them. The extractor removes only spaces and hyphens from an explicitly labeled eight-digit loan-number candidate; it preserves digit order and does not guess replacement digits.
+The tax-record sheet contains conflicting loan-number observations: `[REDACTED_LOAN_ID_1]` on PDF page 1 and `[REDACTED_LOAN_ID_2]` on page 2. I checked page 2 against the rendered source before redaction; the differing digits are present in the document, so I did not silently correct them. The extractor removes only spaces and hyphens from an explicitly labeled eight-digit loan-number candidate; it preserves digit order and does not guess replacement digits. The stable placeholders preserve the conflict but intentionally prevent a reader of the committed artifact from comparing the identifiers with the source.
 
 The first candidate is supported by PDF pages 1, 3-10 across four distinct groups: DOC-01 Tax Record (weight 2), DOC-02 Affidavit (2), DOC-03 Rider (3), and DOC-04 Rate Note (4), for a summed reliability score of 11. The second candidate appears on page 2 in DOC-01 only (one group, weight 2). The ranking compares distinct-group count first, then the configured document-type weight; repeated pages within a group count once. This makes `[REDACTED_LOAN_ID_1]` the better-supported value, not a verified truth. The pipeline preserves both observations, selects the first provisionally, sets `review_required`, and raises a high-severity human-review flag.
 
@@ -61,7 +63,7 @@ Both prompts treat document text as untrusted evidence rather than instructions.
 
 ## Implementation and additional ideas
 
-Run the local pipeline with `python src/loan_pipeline.py`. It reads the provided PDF, label list, and field schema, then writes `result.json`.
+Run the local pipeline with `python src/loan_pipeline.py`. It reads the provided PDF, label list, and field schema, extracts and reconciles values in memory, redacts borrower, property, and loan identifiers, then writes the privacy-safe `result.json`.
 
 - **Distinct-document evidence:** reconciliation groups repeated values by document before scoring them, avoiding false confidence from duplicated page headers.
 - **Layout-aware fallback:** the Closing Disclosure's text extractor interleaves neighboring columns. The address extractor uses word coordinates to read only the Property cell when ordinary text order is unreliable.
@@ -73,7 +75,7 @@ The local implementation is a deterministic baseline, not a live LLM call. This 
 
 ## Verification
 
-The pipeline was run against the supplied PDF. The generated output contains 12 page labels, five document groups, and all three requested fields. The output structure and source-page references were checked; pages 1-3 were visually reviewed, including the loan-number mismatch on page 2. The note's printed page sequence and the Closing Disclosure's Property cell were also checked against their page text/layout. No dedicated automated test suite is included in this small assignment implementation.
+The pipeline was run against the supplied PDF. The generated output contains 12 page labels, five document groups, and all three requested fields. The output structure and source-page references were checked; pages 1-3 were visually reviewed, including the loan-number mismatch on page 2. The note's printed page sequence and the Closing Disclosure's Property cell were also checked against their page text/layout. Sensitive values were reviewed locally against source evidence before redaction; the committed placeholders are not claimed to be source values. No dedicated automated test suite is included in this small assignment implementation.
 
 ## First-pass errors I found and corrected
 

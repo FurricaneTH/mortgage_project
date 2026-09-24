@@ -4,7 +4,7 @@ The assignment requires an actual screen recording. Use this outline while recor
 
 ## Privacy before recording
 
-- The source PDF and generated outputs contain borrower/property/loan details. Do not show or read out unredacted values. Use a masked display copy of `result.json` and redact the relevant source-page areas before showing the conflict.
+- The source PDF may contain borrower/property/loan details. The pipeline redacts these values in `result.json` before writing it; confirm the placeholders are visible before recording. Do not show or read out source identifiers. Crop or redact the relevant source-page areas before showing the conflict.
 - Close unrelated apps, private chats, notifications, and account details. Review the exported recording before sharing it.
 
 ## 0:00-0:45 - Introduce the task
@@ -13,7 +13,7 @@ Show the project folder without opening the source PDF or exposing personal valu
 
 ## 0:45-1:30 - Show the inputs and output contract
 
-Open `candidate_classification_labels.txt`, `extraction_fields.json`, and a masked display copy of `result.json`. Point out that all 12 source pages receive a label and extracted fields keep source-page references. Keep borrower, address, and loan-number values masked.
+Open `candidate_classification_labels.txt`, `extraction_fields.json`, and `result.json`. Point out that all 12 source pages receive a label, extracted fields keep source-page references, and borrower/property/loan identifiers are replaced by stable placeholders before the file is written.
 
 ## 1:30-2:30 - Explain the prompts
 
@@ -25,11 +25,11 @@ Open `src/loan_pipeline.py`. Show the cue-based classifier, grouping by adjacent
 
 ## 3:45-4:45 - Run the local workflow
 
-Run `python src/loan_pipeline.py`. Show the summary, then use only the masked display copy when showing the JSON; do not leave the raw generated output visible in the recording.
+Run `python src/loan_pipeline.py`. Show the summary and the generated JSON. Explain that the pipeline redacts sensitive identifiers before writing the output, while retaining evidence pages and conflict status.
 
 ## 4:45-6:00 - Discuss the real conflict
 
-Show only redacted/cropped views of source pages 1 and 2. Explain that they contain two different loan-number observations and that page 2 was checked against the source. Do not read or display either identifier. Show how the output compares distinct document groups, keeps both observations in the conflict record, and requires human review.
+Show only redacted/cropped views of source pages 1 and 2. Explain that they contain two different loan-number observations and that page 2 was checked against the source before redaction. Do not read or display either identifier. Show how the output compares distinct document groups, keeps both placeholder observations in the conflict record, and requires human review. State that redaction protects the submitted artifact but prevents viewers from directly comparing the placeholder values with the source.
 
 ## 6:00-7:00 - Show review and limitations
 
