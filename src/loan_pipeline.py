@@ -398,13 +398,21 @@ def build_field_result(
             }
             for item in summaries
         ]
+        evidence_comparison = "; ".join(
+            f"{item['value']}: {item['document_count']} distinct document group(s), "
+            f"reliability score {item['reliability_score']}"
+            for item in sorted(summaries, key=lambda item: item["value"])
+        )
         resolution_reason = (
-            "The selected value has the strongest support across distinct document groups. "
-            "Repeated pages within a document group count as one group-level source."
+            "Evidence comparison (distinct document groups; summed document-type reliability): "
+            f"{evidence_comparison}. Repeated pages within one document group count once."
         )
         if selected is None:
             resolution_status = "unresolved"
-            resolution_reason = "Top observations are tied on distinct-document support and reliability; no value was selected."
+            resolution_reason = (
+                "Top observations are tied on distinct-document support and reliability; no value was selected. "
+                f"Evidence comparison (distinct document groups; summed document-type reliability): {evidence_comparison}."
+            )
         else:
             resolution_status = "selected_with_conflict"
         conflicts.append(
@@ -557,7 +565,7 @@ def build_result(
         "confidence_policy": {
             "scale": "0.0-1.0 heuristic evidence-strength score",
             "calibrated": False,
-            "notes": "Scores reflect document cues and distinct-document agreement. They are not calibrated probabilities and do not replace review flags.",
+            "notes": "Scores reflect document cues and distinct-document agreement. They are not calibrated probabilities; confidence does not resolve conflicts or replace review flags.",
         },
         "page_labels": page_labels,
         "documents": output_documents,

@@ -35,9 +35,11 @@ The address is normalized for whitespace and line breaks while preserving the st
 
 ## Loan-level reconciliation
 
-The tax-record sheet prints `[REDACTED_LOAN_ID_1]` on page 1 and `[REDACTED_LOAN_ID_2]` on its continuation page 2. Page 2 was visually checked; the differing digits are printed in the PDF. The value `[REDACTED_LOAN_ID_1]` also appears in the affidavit, rider, and rate note. The pipeline therefore selects `[REDACTED_LOAN_ID_1]`, but sets `review_required` and emits a high-severity quality flag.
+The tax-record sheet contains conflicting loan numbers: `[REDACTED_LOAN_ID_1]` on PDF page 1 and `[REDACTED_LOAN_ID_2]` on page 2. I checked page 2 against the rendered source; the differing digits are present in the document, so I did not silently correct them. The extractor removes only spaces and hyphens from an explicitly labeled eight-digit loan-number candidate; it preserves digit order and does not guess replacement digits.
 
-Reconciliation uses distinct document groups and simple document-type reliability weights. Repeated occurrences on pages of one document do not count as separate confirmations. If the top observations tie, the code leaves the value unresolved. The selected value is a best-supported result, not a claim that the source discrepancy is harmless.
+The first candidate is supported by PDF pages 1, 3-10 across four distinct groups: DOC-01 Tax Record (weight 2), DOC-02 Affidavit (2), DOC-03 Rider (3), and DOC-04 Rate Note (4), for a summed reliability score of 11. The second candidate appears on page 2 in DOC-01 only (one group, weight 2). The ranking compares distinct-group count first, then the configured document-type weight; repeated pages within a group count once. This makes `[REDACTED_LOAN_ID_1]` the better-supported value, not a verified truth. The pipeline preserves both observations, selects the first provisionally, sets `review_required`, and raises a high-severity human-review flag.
+
+The reported confidence is `0.88`. It is a heuristic evidence-strength score capped because a conflict exists; it is not a model probability and is not used to choose between values. There is no live LLM in this baseline, so no model-generated confidence signal is available. Selection instead rests on the visible source-page evidence and agreement across distinct documents. An authoritative loan system or source file must resolve the discrepancy.
 
 The Closing Disclosure's sale-price field and the Note's principal field describe different concepts and should not be treated as duplicate observations. Field-role checks also prevent a seller's mailing address or the document's MIN/file number from replacing the requested borrower, property, or loan-number fields.
 

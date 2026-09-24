@@ -4,7 +4,7 @@
   "confidence_policy": {
     "scale": "0.0-1.0 heuristic evidence-strength score",
     "calibrated": false,
-    "notes": "Scores reflect document cues and distinct-document agreement. They are not calibrated probabilities and do not replace review flags."
+    "notes": "Scores reflect document cues and distinct-document agreement. They are not calibrated probabilities; confidence does not resolve conflicts or replace review flags."
   },
   "page_labels": [
     {
@@ -308,7 +308,7 @@
         }
       ],
       "selected_value": "[REDACTED_LOAN_ID_1]",
-      "resolution_reason": "The selected value has the strongest support across distinct document groups. Repeated pages within a document group count as one group-level source.",
+      "resolution_reason": "Evidence comparison (distinct document groups; summed document-type reliability): [REDACTED_LOAN_ID_1]: 4 distinct document group(s), reliability score 11; [REDACTED_LOAN_ID_2]: 1 distinct document group(s), reliability score 2. Repeated pages within one document group count once.",
       "resolution_status": "selected_with_conflict",
       "requires_human_review": true,
       "recommended_action": "Confirm the selected value against an authoritative loan system or source file."

@@ -12,7 +12,9 @@ Use explicit field roles:
 
 Normalize whitespace and line breaks in names and addresses only. Preserve spelling and address components. If text extraction splits or obscures digits, report the observed candidate as an observation and request review instead of guessing. If documents disagree, preserve each observation and its page reference. Do not resolve conflicts by counting repeated pages as independent documents.
 
-If a field has no reliable evidence, return `null` for its value, empty `source_pages` and `supporting_documents` lists, `null` confidence, and `review_required: true`; explain what evidence is missing in `notes`. Confidence is a rough evidence-strength score, not a calibrated probability. Mark material conflicts as requiring human review even when you can propose a best-supported value.
+When values conflict, preserve every observation and its page/document references. Compare candidates by the number of distinct supporting document groups first, then by the sum of configured document-type reliability weights. Count repeated pages from one document only once. If the comparison is tied, leave `selected_value` null and mark the conflict unresolved. Explain the comparison in `resolution_reason`; do not use confidence alone to break a tie. Confidence is a rough evidence-strength score, not a calibrated probability. Mark material conflicts as requiring human review even when you can propose a best-supported value.
+
+If a field has no reliable evidence, return `null` for its value, empty `source_pages` and `supporting_documents` lists, `null` confidence, and `review_required: true`; explain what evidence is missing in `notes`.
 
 ## User
 
