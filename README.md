@@ -20,6 +20,10 @@ The default command reads `AREAL_LOAN.pdf`, `candidate_classification_labels.txt
 python src/loan_pipeline.py --input path/to/package.pdf --labels path/to/labels.txt --fields path/to/fields.json --output path/to/result.json
 ```
 
+## Validate the working component
+
+The pipeline checks its result before writing it: every PDF page must have exactly one allowed label, document groups must cover all pages without duplicates, extracted fields must match `extraction_fields.json`, and evidence page references must be in range. On the supplied 12-page package, a successful run reports 12 page labels, five document groups, three loan fields, and one high-severity review flag for the conflicting loan number. Compare the generated `result.json` with the source pages when reviewing values; the conflict is intentionally retained for human review. The implementation is local and does not require an LLM API key, so the full pipeline can run without external credentials.
+
 `AREAL_LOAN.pdf` is intentionally excluded from version control because it contains loan and borrower details. On a fresh checkout, place the authorized assignment-provided PDF in the project root before running the default command.
 
 ## Design
