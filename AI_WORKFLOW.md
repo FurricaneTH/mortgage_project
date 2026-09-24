@@ -4,6 +4,7 @@
 
 - OpenAI Codex Desktop for document analysis, prompt drafting, implementation, and review.
 - Python 3.12 with `pdfplumber` for local PDF text and word-coordinate extraction; `pdftoppm` for page-image review; Git for version control.
+- Codex's PDF skill instructions guided the report PDF workflow, including layout-aware generation and visual review. The PDF itself was generated with the project's `report/build_report.py` script using ReportLab.
 - No paid LLM API or external data connector was used. No agents were delegated.
 
 ## Repository Instructions / Agent Configuration
