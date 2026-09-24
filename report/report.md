@@ -5,9 +5,11 @@ Design, implementation, and results
 
 ## Executive summary
 
-The assignment asks for page-level classification, logical document grouping, extraction of three loan-level fields, conflict reconciliation, and a small working implementation. The supplied PDF contains 12 pages from five document groups. The implementation produces structured JSON locally, without a paid model API, and sends the conflicting loan number to human review.
+The assignment asks for page classification, document grouping, three loan-level fields, conflict reconciliation, and a working implementation. The 12-page PDF contains five document groups. A local pipeline produces the results and flags the conflicting loan number for human review.
 
 The design uses a hybrid approach: deterministic text and layout rules make the provided example reproducible; the full LLM prompts are maintained in `prompts/page_classification.md` and `prompts/field_extraction.md` for an API-backed extension. The output preserves evidence pages, printed pagination, competing observations, and review flags.
+
+JSON was selected because it keeps page labels, document groups, extracted fields, evidence, conflicts, and review flags in one machine-readable structure that is easy to validate and reuse.
 
 ## Page classification and document grouping
 
@@ -63,6 +65,4 @@ The pipeline was run against the supplied PDF. The generated output contains 12 
 
 ## First-pass errors I found and corrected
 
-When I compared the first generated JSON with the labeled fields and the source PDF, I found two extraction errors. The borrower-name rule treated any text following the word “Borrower” as a possible name, so headings such as “Borrower Did Not Shop For” and “Closing Date” appeared as false name candidates. The address rule also read the spaced house number on page 1 as `4` instead of `[REDACTED_ADDRESS_NUMBER]`.
-
-I rejected those candidates because they did not match the explicit borrower-name field or the address printed on the source page. I narrowed name extraction to the explicit `Borrower(s) Name` field and exact supporting occurrences. For the address, I made separated-digit normalization conditional on a following compass direction and added a coordinate-based fallback that reads the Closing Disclosure’s Property cell. After rerunning the pipeline, I checked the corrected values against the PDF. I left the different loan number on page 2 in the output as a conflict requiring human review rather than hiding it.
+When reviewing the first output against the source PDF, I found two errors: headings were captured as borrower names, and the house number text was misread. I narrowed name extraction to the explicit `Borrower(s) Name` field and corrected address handling with contextual digit normalization and a coordinate-based fallback for the Closing Disclosure's Property cell. After rerunning and checking the values, I kept the different loan number on page 2 visible as a conflict requiring human review.
