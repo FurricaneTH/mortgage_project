@@ -41,6 +41,16 @@ Reconciliation uses distinct document groups and simple document-type reliabilit
 
 The Closing Disclosure's sale-price field and the Note's principal field describe different concepts and should not be treated as duplicate observations. Field-role checks also prevent a seller's mailing address or the document's MIN/file number from replacing the requested borrower, property, or loan-number fields.
 
+## Field extraction design and trade-offs
+
+`extraction_fields.json` lists `borrower_name`, `property_address`, and `loan_number`. Extraction starts after every page is classified and adjacent pages are grouped. The baseline reads each page for field evidence, then reconciles values at loan level. This keeps page citations precise while groups provide context and count as one source. The LLM prompt follows the same sequence, with candidate pages grouped by `document_id`.
+
+The prompt returns each value with source pages, supporting documents, confidence, review flag, and notes; a `conflicts` list preserves alternatives. This is auditable and easy to validate, though more verbose than flat values.
+
+For a future LLM call, grouped candidate pages preserve context and can reduce token use. The current baseline scans all page text locally, makes no API calls, and runs the same rules reproducibly. Explicit patterns and the layout fallback help on this package but may miss unfamiliar formats. Validation checks page coverage, labels, field keys, and evidence-page ranges.
+
+No extractable text stops the run with an OCR instruction. Missing fields return `null` and require review; conflicts are preserved and ties remain unresolved rather than guessed.
+
 ## Prompt design
 
 The classification prompt requires one allowed label per input page, uses adjacent pages only as context, preserves PDF page references, and makes weak evidence visible with a lower confidence score and a concise note. The extraction prompt defines the roles of borrower name, property address, and loan number; requires page references; and preserves all competing observations rather than silently resolving them.

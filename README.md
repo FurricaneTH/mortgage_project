@@ -26,6 +26,7 @@ python src/loan_pipeline.py --input path/to/package.pdf --labels path/to/labels.
 
 - The local baseline uses weighted title, form-code, and content cues. It reads the allowed labels from the supplied label file and fails if the classifier rules drift from that list.
 - Adjacent pages with the same label are grouped. Printed page markers are kept separately from 1-based PDF page references, so the Fixed-rate Note's internal order anomaly remains visible.
+- Loan-field extraction runs after page classification and grouping. The pipeline gathers field observations from individual pages, then reconciles values across distinct document groups; `extraction_fields.json` lists the requested fields.
 - Field extraction uses labeled borrower and loan-number patterns, address normalization, and a coordinate-based fallback for the Closing Disclosure's multi-column property cell.
 - Reconciliation counts distinct document groups and applies simple document-type weights. Repeated mentions inside one document do not count as independent confirmation. Ties remain unresolved, and material conflicts create a review flag.
 - The confidence values are heuristic evidence-strength scores, not calibrated probabilities.

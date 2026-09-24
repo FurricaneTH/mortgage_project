@@ -12,11 +12,11 @@ Use explicit field roles:
 
 Normalize whitespace and line breaks in names and addresses only. Preserve spelling and address components. If text extraction splits or obscures digits, report the observed candidate as an observation and request review instead of guessing. If documents disagree, preserve each observation and its page reference. Do not resolve conflicts by counting repeated pages as independent documents.
 
-If a field has no reliable evidence, return `null` for its value and an empty `source_pages` list. Confidence is a rough evidence-strength score, not a calibrated probability. Mark material conflicts as requiring human review even when you can propose a best-supported value.
+If a field has no reliable evidence, return `null` for its value, empty `source_pages` and `supporting_documents` lists, `null` confidence, and `review_required: true`; explain what evidence is missing in `notes`. Confidence is a rough evidence-strength score, not a calibrated probability. Mark material conflicts as requiring human review even when you can propose a best-supported value.
 
 ## User
 
-Extract the fields listed in `fields`. The input contains relevant pages grouped by `document_id`; each page number is the 1-based page number in the original PDF. Use the document label and page text as evidence. Return one value per requested field, source page numbers, brief notes, and every competing observation that could change the final value.
+Run this stage after page classification and document grouping. Extract the fields listed in `fields`. The input contains candidate pages grouped by `document_id`; each page number is the 1-based page number in the original PDF. Use a document group to understand multi-page context, but inspect each page's text as its own evidence and cite only pages that actually support a value. Repeated mentions within one document group are not independent confirmations. Reconcile observations across distinct document groups, and return one value per requested field, source page numbers, brief notes, and every competing observation that could change the final value.
 
 Input:
 
@@ -45,7 +45,7 @@ Return exactly this JSON shape:
       "source_pages": [],
       "supporting_documents": [],
       "confidence": null,
-      "review_required": false,
+      "review_required": true,
       "notes": ""
     },
     "property_address": {
@@ -53,7 +53,7 @@ Return exactly this JSON shape:
       "source_pages": [],
       "supporting_documents": [],
       "confidence": null,
-      "review_required": false,
+      "review_required": true,
       "notes": ""
     },
     "loan_number": {
@@ -61,7 +61,7 @@ Return exactly this JSON shape:
       "source_pages": [],
       "supporting_documents": [],
       "confidence": null,
-      "review_required": false,
+      "review_required": true,
       "notes": ""
     }
   },
