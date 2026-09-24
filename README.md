@@ -51,4 +51,4 @@ The pipeline checks its result before writing it: every PDF page must have exact
 
 This is a small, assignment-specific baseline, not a production mortgage-processing system. It expects selectable text in the PDF; pages without extractable text stop with an actionable error and need OCR before classification. The address patterns cover common U.S. formats and should be expanded before use on a broader corpus. Any loan-number conflict is routed for human review.
 
-The supplied loan package contains personal and financial details. Keep `AREAL_LOAN.pdf` local and do not publish it.
+The supplied loan package contains personal and financial details. Keep `AREAL_LOAN.pdf` local and do not publish it. The generated `result.json` and report also contain borrower, property, and loan values; treat them as sensitive and mask them in recordings or any sharing outside the authorized submission channel.
