@@ -79,4 +79,4 @@ The pipeline was run against the supplied PDF. The generated output contains 12 
 
 ## First-pass errors I found and corrected
 
-When reviewing the first output against the source PDF, I found two errors: headings were captured as borrower names, and the house number text was misread. I narrowed name extraction to the explicit `Borrower(s) Name` field and corrected address handling with contextual digit normalization and a coordinate-based fallback for the Closing Disclosure's Property cell. After rerunning and checking the values, I kept the different loan number on page 2 visible as a conflict requiring human review.
+When reviewing the first output against the source PDF, I found two errors: headings were captured as borrower names, and a house number split across the PDF text was misread. I narrowed name extraction to the explicit `Borrower(s) Name` field and corrected address handling with contextual digit normalization and a coordinate-based fallback for the Closing Disclosure's Property cell. After rerunning and checking the values, I kept the different loan number on page 2 visible as a conflict requiring human review.

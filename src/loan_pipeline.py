@@ -249,9 +249,9 @@ def extract_address_observations(pages: list[dict[str, Any]]) -> dict[str, set[i
     observations: dict[str, set[int]] = defaultdict(set)
     for page in pages:
         flat = normalized_text(page["text"])
-        # Some form fields encode a house number as separated glyphs, e.g.
-        # "[REDACTED_ADDRESS_NUMBER] N ...". Collapse only digit runs directly before a compass
-        # direction; generic whitespace removal could join unrelated values.
+        # Some form fields separate adjacent house-number digits. Collapse
+        # only digit runs directly before a compass direction; generic
+        # whitespace removal could join unrelated values.
         address_text = re.sub(
             r"\b(?:\d\s+){1,5}\d(?=\s+[NSEW]\b)",
             lambda match: re.sub(r"\s+", "", match.group(0)),
